@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Revision</title>
+</head>
+<body onload="loadBooks()">
+    <div class="container-fluid">
+        <div class="row" style="height: 100vh;">
+            <div class="col-8">
+                <h4 class="display-4">List of books</h4>
+                <hr>
+                <table class="table table-striped table-bordered table-hover table-secondary">
+                    <thead>
+                        <tr>
+                            <th>S/N</th>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookBox"></tbody>
+                </table>
+            </div>
+            <div class="col-4 bg-primary">
+                <h4>Enter new books</h4>
+                <hr>
+                <div class="mt-5">
+                    <input type="text" class="form-control" id="title" placeholder="What is the title of the book?"><br>                    <input type="text" class="form-control" id="author" placeholder="Who wrote the book?">
+                    <input type="date" class="form-control mt-4" id="date_bought"><br>
+                    <input type="text" class="form-control" id="price" placeholder="How much did you buy it?"><br>
+                    <button id="saveBtn" class="col-12 btn btn-warning" onclick="saveBook() ">Save Book</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    var bookArr = [];
+    var isEditing = false; 
+    var editingIndex;
+
+    function saveBook(){
+        if(isEditing){
+        var bookTitle = title.value;
+        var bookAuthor = author.value;
+        var bookDate = date_bought.value;
+        var bookPrice = price.value;
+
+         bookArr[editingIndex] = bookObj;
+         displayBooks(); 
+        localStorage.setItem('books', JSON.stringify(bookArr));   
+    }
+        else{
+        var bookTitle = title.value;
+        var bookAuthor = author.value;
+        var bookDate = date_bought.value;
+        var bookPrice = price.value;
+
+        var bookObj = {title: bookTitle, author: bookAuthor, date_brought: bookDate, price: bookPrice};
+        bookArr.push(bookObj);
+
+        displayBooks(); 
+        localStorage.setItem('books', JSON.stringify(bookArr));
+    }
+}
+    function displayBooks(){
+        bookBox.innerHTML = "";
+        for(index = 0; index < bookArr.length; index++){
+            bookBox.innerHTML += `<tr>
+                <td>${index + 1}</td>
+                <td>${bookArr[index].title}</td>
+                <td>${bookArr[index].author}</td>
+                <td>${bookArr[index].date_brought}</td>
+                <td>${bookArr[index].price}</td>
+                <td><button class="btn btn-success" onclick ="editBook(${index})">Edit</button><button class="btn btn-danger" onclick="deleteBook(${index})">Delete</button></td>
+            </tr>`;
+        }
+    
+//     bookArr.map((eachBook, index)=>{
+//         bookBox.innerHTML += `
+//         <tr>
+//             <td>${index + 1}</td>
+//             <td>${eachBook.title}</td>
+//             <td>${eachBook.author}</td>
+//             <td>${eachBook.date_bought}</td>
+//             <td>${eachBook.price}</td>
+//         `
+//     })
+}
+
+const loadBooks = () =>{
+    let books = localStorage.getItem('books');
+    if (books){
+        bookArr = JSON.parse(books);
+    }
+    displayBooks();
+}
+
+const deleteBook = (index) =>{
+    if(confirm("Are you sure you want to delete this book?")){
+    bookArr.splice(index,1);
+    displayBooks();
+    localStorage.setItem("books", JSON.stringify(bookArr));
+    }
+}
+
+const editBook = (index) =>{
+    editingIndex = index;
+
+    let book = bookArr[index];
+    title.value = book.title;
+    author.value = book.author;
+    date_bought.value = book.date_bought;
+    price.value = book.price;
+    saveBtn.innerHTML = "Update Book";
+    isEditing = true;
+}
+</script>
+</html>
